@@ -51,6 +51,32 @@ app.use(bodyParser.urlencoded({
   limit: '10mb'
 }));
 
+app.get('/beta', (req, res) => {
+    // Path to the JSON file
+    const filePath = path.join(__dirname, 'random.json');
+
+    // Read the JSON file
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            return res.status(500).json({ error: 'Failed to read the responses file.' });
+        }
+
+        try {
+            // Parse the JSON data
+            const responses = JSON.parse(data);
+
+            // Select a random object
+            const randomIndex = Math.floor(Math.random() * responses.length);
+            const randomItem = responses[randomIndex];
+
+            // Send the random object as JSON
+            res.json(randomItem);
+        } catch (error) {
+            res.status(500).json({ error: 'Invalid JSON format in the file.' });
+        }
+    });
+});
+
 app.get("/api-list", (req, res) => {
   try {
     const apiList = Array.from(global.api.values()).map(api => ({
